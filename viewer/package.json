@@ -1,0 +1,17 @@
+{
+  "name": "cs-demoviewer",
+  "version": "0.1.0",
+  "description": "Single-file embeddable CS2 2D demo viewer (Stage 07)",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:umd && npm run build:esm",
+    "build:umd": "esbuild src/index.js --bundle --format=iife --global-name=CSDemoViewerBundle --outfile=dist/viewer.js --minify",
+    "build:esm": "esbuild src/index.js --bundle --format=esm --outfile=dist/viewer.esm.js --minify",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "jsdom": "^25.0.0",
+    "vitest": "^2.1.0"
+  }
+}

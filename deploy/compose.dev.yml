@@ -1,0 +1,49 @@
+# Local development stack — Percona + phpMyAdmin for DB inspection. The API + worker
+# run locally via `uv` during dev (fast iteration); only the DB lives in a container here.
+#
+# Redis is NOT run locally: dev uses the *server's* Redis (shared with isdigital/csstrats)
+# over an SSH tunnel — see deploy/redis-tunnel.sh. demoviewer is isolated on logical db 3.
+# (Tests don't need it: they use in-process fakeredis.)
+#
+#   docker compose -f deploy/compose.dev.yml up -d
+#   ./deploy/redis-tunnel.sh <user>@<server>     # localhost:6379 → server redis (db 3)
+#   MySQL:      127.0.0.1:3307   (user demoviewer / devpass, db demoviewer)
+#   Redis:      127.0.0.1:6379   (tunneled; redis://127.0.0.1:6379/3)
+#   phpMyAdmin: http://localhost:8080
+name: demoviewer-dev
+
+services:
+  db:
+    image: percona:8.0
+    platform: linux/amd64   # Percona has no arm64 image; OrbStack emulates amd64
+    container_name: dv_percona
+    environment:
+      MYSQL_ROOT_PASSWORD: devroot
+      MYSQL_DATABASE: demoviewer
+      MYSQL_USER: demoviewer
+      MYSQL_PASSWORD: devpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - dv_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pdevroot"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: dv_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 512M
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  dv_db:

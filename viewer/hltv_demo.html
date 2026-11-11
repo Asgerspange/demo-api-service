@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NAVI vs FaZe — IEM Cologne 2025 | hltv-ish</title>
+<style>
+  :root {
+    --bg: #20242c; --panel: #2a2f38; --panel2: #323843; --line: #3a414e;
+    --text: #d7dbe2; --muted: #8b93a3; --blue: #6c9bd2; --gold: #d1c185;
+    --ct: #6c9bd2; --t: #d1c185; --accent: #f5a623; --win: #6ab04c; --loss: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+  a { color: var(--blue); text-decoration: none; }
+
+  /* top nav (HLTV-style dark bar) */
+  .nav { background: #14171c; border-bottom: 2px solid var(--accent);
+         display: flex; align-items: center; gap: 22px; padding: 0 24px; height: 46px; }
+  .nav .logo { font-weight: 800; letter-spacing: 1px; color: #fff; }
+  .nav .logo b { color: var(--accent); }
+  .nav a { color: var(--muted); font-size: 13px; font-weight: 600; text-transform: uppercase; }
+  .nav a:hover { color: #fff; }
+
+  .wrap { max-width: 1100px; margin: 18px auto; padding: 0 16px; }
+
+  /* match header */
+  .matchhead { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+               overflow: hidden; }
+  .event { padding: 10px 16px; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line);
+           display: flex; justify-content: space-between; }
+  .event .live { color: var(--loss); font-weight: 700; }
+  .teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 18px 24px; }
+  .team { display: flex; align-items: center; gap: 14px; }
+  .team.right { justify-content: flex-end; }
+  .team .badge { width: 46px; height: 46px; border-radius: 8px; display: grid; place-items: center;
+                 font-weight: 800; font-size: 18px; color: #11141a; }
+  .team .name { font-size: 22px; font-weight: 700; color: #fff; }
+  .score { text-align: center; font-weight: 800; font-size: 40px; letter-spacing: 2px; }
+  .score .s1 { color: var(--blue); } .score .s2 { color: var(--gold); }
+  .score .bo { display: block; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1px; }
+
+  /* map tabs */
+  .maps { display: flex; gap: 2px; background: var(--panel2); border: 1px solid var(--line);
+          border-top: none; }
+  .maps .map { padding: 9px 18px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
+               border-bottom: 2px solid transparent; }
+  .maps .map.active { color: #fff; border-bottom-color: var(--accent); background: var(--panel); }
+  .maps .map small { color: var(--muted); margin-left: 6px; font-weight: 500; }
+
+  /* viewer panel */
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; margin-top: 16px; }
+  .panel h3 { margin: 0; padding: 11px 16px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+              color: var(--muted); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .panel h3 .rd { color: var(--accent); }
+  #viewer { width: 100%; height: 600px; background: #0e0f12; border-radius: 0 0 8px 8px; overflow: hidden; }
+
+  /* round history */
+  .rounds { display: flex; flex-wrap: wrap; gap: 3px; padding: 12px 16px; }
+  .rounds .r { width: 22px; height: 22px; border-radius: 3px; display: grid; place-items: center;
+               font-size: 10px; font-weight: 700; color: #11141a; cursor: pointer; opacity: .8; }
+  .rounds .r.ct { background: var(--ct); } .rounds .r.t { background: var(--gold); }
+  .rounds .r.active { outline: 2px solid #fff; opacity: 1; }
+  .grid { display: grid; grid-template-columns: 230px 1fr 230px; gap: 16px; align-items: start; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+  .panel h3.ct { color: var(--ct); } .panel h3.t { color: var(--gold); }
+  .players { padding: 6px 0 10px; }
+  .sb-teamh { display: flex; justify-content: space-between; padding: 7px 16px 3px; font-weight: 700;
+              font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .sb-teamh.ct { color: var(--ct); } .sb-teamh.t { color: var(--gold); }
+  .sb-cols, .prow { display: grid; grid-template-columns: 1fr 52px 26px 46px; gap: 4px; padding: 3px 16px; align-items: center; }
+  .sb-cols { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .5px; }
+  .prow { font-size: 12px; border-top: 1px solid rgba(255,255,255,.04); }
+  .prow.dead { opacity: .42; }
+  .prow .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .prow .nm .wep { display: block; font-size: 10px; font-weight: 400; color: var(--muted); }
+  .prow.ct .nm { color: var(--ct); } .prow.t .nm { color: var(--gold); }
+  .prow .kda { color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .prow .hp { text-align: right; font-variant-numeric: tabular-nums; }
+  .prow .mny { text-align: right; color: var(--win); font-variant-numeric: tabular-nums; }
+  .foot { color: var(--muted); font-size: 12px; text-align: center; padding: 18px; }
+</style>
+</head>
+<body>
+  <div class="nav">
+    <span class="logo">HLT<b>2D</b></span>
+    <a href="#">Matches</a><a href="#">Results</a><a href="#">Events</a><a href="#">Stats</a><a href="#">Demos</a>
+  </div>
+
+  <div class="wrap">
+    <div class="matchhead">
+      <div class="event">
+        <span>IEM Cologne 2025 · Grand Final · Best of 3</span>
+        <span class="live">● REPLAY</span>
+      </div>
+      <div class="teams">
+        <div class="team">
+          <div class="badge" style="background:var(--blue)">NA</div>
+          <div class="name" id="teamA">Natus Vincere</div>
+        </div>
+        <div class="score">
+          <span class="s1" id="scoreA">–</span> : <span class="s2" id="scoreB">–</span>
+          <span class="bo">MAP 1 · INFERNO</span>
+        </div>
+        <div class="team right">
+          <div class="name" id="teamB">FaZe Clan</div>
+          <div class="badge" style="background:var(--gold)">FZ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="maps">
+      <div class="map active">Inferno <small id="mapscore">live</small></div>
+      <div class="map">Mirage <small>—</small></div>
+      <div class="map">Nuke <small>—</small></div>
+    </div>
+
+    <div class="grid">
+      <aside class="side">
+        <div class="panel">
+          <h3 class="ct"><span id="ctName">Natus Vincere</span><span id="ctKills">0 K</span></h3>
+          <div class="players" id="ctboard"></div>
+        </div>
+      </aside>
+
+      <div class="main">
+        <div class="panel">
+          <h3>2D Demo Viewer <span class="rd" id="roundlabel">Round —</span></h3>
+          <div id="viewer"></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <h3>Round history <span style="color:var(--muted)">click to jump</span></h3>
+          <div class="rounds" id="rounds"></div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <h3 class="t"><span id="tName">FaZe Clan</span><span id="tKills">0 K</span></h3>
+          <div class="players" id="tboard"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="foot">Powered by CSDemoViewer · embedded with one <code>&lt;script&gt;</code> + <code>CSDemoViewer.init()</code></div>
+  </div>
+
+  <script src="./dist/viewer.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const API = 'http://localhost:8000';
+    const KEY = 'pk_live_YOUR_CLIENT_KEY';  // dev client key (read-only, origin-locked)
+    const DEMO_ID = 1;
+
+    let viewer = null;
+
+    function buildRoundHistory(meta) {
+      const el = $('rounds');
+      el.innerHTML = '';
+      (meta.rounds || []).forEach((r) => {
+        const side = (r.meta?.winner || 'ct') === 't' ? 't' : 'ct';
+        const sq = document.createElement('div');
+        sq.className = `r ${side}`;
+        sq.textContent = r.round_index;
+        sq.title = `Round ${r.round_index} — ${side.toUpperCase()} win (${r.meta?.reason || ''})`;
+        sq.dataset.round = r.round_index;
+        sq.addEventListener('click', () => viewer.setRound(r.round_index));
+        el.appendChild(sq);
+      });
+      // final score = last round's cumulative T/CT score
+      const last = (meta.rounds || []).slice(-1)[0]?.meta || {};
+      $('scoreA').textContent = last.CT_score ?? 0;   // NAVI shown as CT side here (illustrative)
+      $('scoreB').textContent = last.T_score ?? 0;
+      $('mapscore').textContent = `${last.CT_score ?? 0}–${last.T_score ?? 0}`;
+    }
+
+    function highlightRound(i) {
+      document.querySelectorAll('#rounds .r').forEach((el) =>
+        el.classList.toggle('active', Number(el.dataset.round) === i));
+      $('roundlabel').textContent = 'Round ' + i;
+    }
+
+    const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+    function teamRows(side, players) {
+      return players.map((p) => `
+        <div class="prow ${side} ${p.alive ? '' : 'dead'}">
+          <span class="nm">${p.hasC4 ? '💣 ' : ''}${esc(p.name)}<span class="wep">${esc(p.weapon)}</span></span>
+          <span class="kda">${p.kills}-${p.deaths}-${p.assists}</span>
+          <span class="hp">${p.alive ? p.health : '☠'}</span>
+          <span class="mny">$${p.money}</span>
+        </div>`).join('');
+    }
+
+    // Live scoreboard from the viewer's per-tick snapshot — one team on each side of the viewer.
+    function renderScoreboard(snap) {
+      if (!snap) return;
+      const ct = snap.players.filter((p) => p.team === 'ct');
+      const t = snap.players.filter((p) => p.team === 't');
+      const sumK = (a) => a.reduce((n, p) => n + p.kills, 0);
+      const cols = '<div class="sb-cols"><span>Player</span><span>K-D-A</span><span>HP</span><span>$</span></div>';
+      $('ctboard').innerHTML = cols + teamRows('ct', ct);
+      $('tboard').innerHTML = cols + teamRows('t', t);
+      $('ctKills').textContent = sumK(ct) + ' K';
+      $('tKills').textContent = sumK(t) + ' K';
+    }
+
+    viewer = CSDemoViewer.init({
+      el: '#viewer',
+      apiBase: API,
+      demoId: DEMO_ID,
+      clientKey: KEY,
+      skipFreezetime: true,
+      autoplay: true,
+      autoAdvance: true,                 // roll into the next round automatically
+      // Full per-tenant theming — recolor teams/accent/chrome, size markers, pick controls.
+      // The host page draws its own side scoreboards, so the in-canvas HUD is turned off.
+      theme: {
+        accent: '#f5a623',
+        ctColor: '#6c9bd2', tColor: '#d1c185',
+        background: '#0e0f12',
+        controlBg: 'rgba(20,23,28,0.85)', controlColor: '#d7dbe2',
+        playerIconSize: 26, weaponIconSize: 11, nameFontSize: 11,
+        showNames: true, showWeapons: true,
+        controls: ['play', 'timeline', 'round', 'speed', 'fullscreen'],
+      },
+      hooks: {
+        onReady: (api) => {
+          buildRoundHistory(api.meta);
+          highlightRound(api.meta.rounds?.[0]?.round_index ?? 1);
+          renderScoreboard(api.snapshot());
+        },
+        onRoundChange: (i) => { highlightRound(i); renderScoreboard(viewer.snapshot()); },
+        // onTick fires per rendered tick; throttle the scoreboard rebuild to ~every 3rd tick.
+        onTick: (i) => { if (i % 3 === 0) renderScoreboard(viewer.snapshot()); },
+        onError: (e) => { $('roundlabel').textContent = 'error: ' + (e?.message || e); },
+      },
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "ticks": {
+    "100": {
+      "players": [
+        {
+          "steamid": "76561198000000001", "name": "alice", "X": -200.5, "Y": 1300.0,
+          "yaw": 90.0, "health": 100, "armor_value": 100, "balance": 4500,
+          "flash_duration": 0.0, "has_defuser": false, "has_helmet": true,
+          "is_walking": false, "active_weapon_name": "ak47", "team_name": "t",
+          "inventory": ["ak47", "knife"]
+        },
+        {
+          "steamid": "76561198000000002", "name": "bob", "X": 500.0, "Y": -100.0,
+          "yaw": -45.0, "health": 100, "armor_value": 100, "balance": 3200,
+          "flash_duration": 0.0, "has_defuser": true, "has_helmet": true,
+          "is_walking": true, "active_weapon_name": "m4a1", "team_name": "ct",
+          "inventory": ["m4a1", "knife", "C4"]
+        }
+      ],
+      "weapon_fires": [
+        {
+          "player_steamid": "76561198000000001", "player_X": -200.5, "player_Y": 1300.0,
+          "player_yaw": 90.0, "weapon": "ak47"
+        }
+      ],
+      "grenades": [
+        {
+          "entity_id": 42, "grenade_type": "smokegrenade", "X": 100.0, "Y": 250.0,
+          "thrower_steamid": "76561198000000002"
+        }
+      ]
+    },
+    "101": {
+      "players": [
+        {
+          "steamid": "76561198000000001", "name": "alice", "X": -190.0, "Y": 1310.0,
+          "yaw": 92.0, "health": 100, "armor_value": 100, "balance": 4500,
+          "flash_duration": 0.0, "has_defuser": false, "has_helmet": true,
+          "is_walking": false, "active_weapon_name": "ak47", "team_name": "t",
+          "inventory": ["ak47", "knife"]
+        },
+        {
+          "steamid": "76561198000000002", "name": "bob", "X": 505.0, "Y": -95.0,
+          "yaw": -40.0, "health": 88, "armor_value": 100, "balance": 3200,
+          "flash_duration": 1.5, "has_defuser": true, "has_helmet": true,
+          "is_walking": false, "active_weapon_name": "m4a1", "team_name": "ct",
+          "inventory": ["m4a1", "knife", "C4"]
+        }
+      ],
+      "bomb": { "X": 505.0, "Y": -95.0, "planted_ticks": -1 }
+    }
+  },
+  "meta": {
+    "round_number": 1, "winner": "ct", "reason": "ct_win",
+    "freeze_end": 90, "start": 50, "end": 200, "official_end": 210,
+    "CT_score": 1, "T_score": 0
+  },
+  "smokes": [
+    {
+      "entity_id": 42, "start_tick": 105, "end_tick": 400, "thrower_name": "bob",
+      "thrower_side": "ct", "thrower_steamid": "76561198000000002",
+      "X": 100.0, "Y": 250.0, "Z": 64.0, "round_num": 1
+    }
+  ],
+  "infernos": [],
+  "kills": {}
+}

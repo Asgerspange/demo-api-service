@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demoviewer · Admin</title>
+<style>
+  :root {
+    --bg:        oklch(98.6% 0.004 285);
+    --surface:   oklch(99.4% 0.003 285);
+    --panel:     oklch(97.0% 0.005 285);
+    --border:    oklch(91.5% 0.006 285);
+    --border-strong: oklch(86% 0.008 285);
+    --text:      oklch(30% 0.02 285);
+    --muted:     oklch(55% 0.014 285);
+    --faint:     oklch(66% 0.012 285);
+    --accent:    oklch(54% 0.17 290);
+    --accent-press: oklch(48% 0.17 290);
+    --accent-weak: oklch(95.5% 0.03 290);
+    --ok:        oklch(58% 0.12 155);
+    --ok-weak:   oklch(95% 0.04 155);
+    --warn:      oklch(70% 0.12 75);
+    --warn-weak: oklch(95% 0.05 80);
+    --danger:    oklch(56% 0.18 25);
+    --danger-weak: oklch(95% 0.05 25);
+    --shadow: 0 1px 2px oklch(30% 0.02 285 / 0.06), 0 4px 16px oklch(30% 0.02 285 / 0.06);
+    --radius: 9px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; cursor: pointer; }
+  input, select { font: inherit; color: var(--text); }
+  ::selection { background: var(--accent-weak); }
+
+  /* ---- buttons ---- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border-strong); background: var(--surface);
+    color: var(--text); padding: 7px 12px; border-radius: 8px; font-weight: 500;
+    transition: background .15s var(--ease), border-color .15s var(--ease), transform .05s;
+  }
+  .btn:hover { background: var(--panel); border-color: var(--faint); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn.primary { background: var(--accent); border-color: transparent; color: oklch(99% 0.01 290); }
+  .btn.primary:hover { background: var(--accent-press); }
+  .btn.danger { color: var(--danger); border-color: oklch(82% 0.06 25); }
+  .btn.danger:hover { background: var(--danger-weak); }
+  .btn.sm { padding: 4px 9px; font-size: 12.5px; border-radius: 7px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .btn.ghost:hover { background: var(--panel); color: var(--text); }
+
+  .field {
+    width: 100%; padding: 8px 11px; border: 1px solid var(--border-strong);
+    border-radius: 8px; background: var(--surface); transition: border-color .15s, box-shadow .15s;
+  }
+  .field:focus { outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-weak); }
+  label.lbl { display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+    margin: 0 0 4px; letter-spacing: .01em; }
+
+  /* ---- gate ---- */
+  #gate { position: fixed; inset: 0; display: grid; place-items: center;
+    background: var(--bg); z-index: 50; }
+  #gate .card { width: min(380px, 92vw); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+    padding: 28px; }
+  #gate h1 { font-size: 19px; margin: 2px 0 4px; letter-spacing: -0.01em; }
+  #gate p { color: var(--muted); margin: 0 0 18px; font-size: 13px; }
+  #gateErr { color: var(--danger); font-size: 13px; min-height: 18px; margin-top: 10px; }
+
+  /* ---- shell ---- */
+  #app { display: none; grid-template-rows: auto 1fr; height: 100vh; }
+  header {
+    display: flex; align-items: center; gap: 14px; padding: 0 18px; height: 56px;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .brand { font-weight: 700; letter-spacing: -0.02em; }
+  .brand b { color: var(--accent); }
+  .spacer { flex: 1; }
+  .pill { font-size: 12px; color: var(--muted); background: var(--panel);
+    border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; }
+
+  .layout { display: grid; grid-template-columns: 300px 1fr; min-height: 0; }
+  aside { border-right: 1px solid var(--border); background: var(--panel);
+    display: flex; flex-direction: column; min-height: 0; }
+  .aside-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 8px; }
+  .aside-head h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--faint); margin: 0; font-weight: 700; }
+  .search { margin: 0 12px 8px; }
+  #userList { overflow-y: auto; padding: 4px 8px 12px; }
+  .urow { width: 100%; text-align: left; border: 1px solid transparent; background: transparent;
+    border-radius: 9px; padding: 9px 11px; display: flex; align-items: center; gap: 10px;
+    transition: background .12s; }
+  .urow:hover { background: var(--surface); }
+  .urow[aria-selected="true"] { background: var(--surface); border-color: var(--border);
+    box-shadow: var(--shadow); }
+  .urow .em { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .urow .sub { font-size: 12px; color: var(--faint); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--ok); }
+  .dot.suspended { background: var(--warn); }
+
+  main { overflow-y: auto; min-height: 0; }
+  .pad { padding: 24px 28px; max-width: 1080px; }
+
+  .empty { display: grid; place-items: center; height: 100%; text-align: center; color: var(--muted); }
+  .empty .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-weak);
+    color: var(--accent); display: grid; place-items: center; margin: 0 auto 14px; font-size: 20px; }
+
+  .detail-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 4px; }
+  .detail-head h1 { font-size: 21px; margin: 0; letter-spacing: -0.02em; }
+  .detail-head .meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .row-actions { display: flex; gap: 8px; margin-left: auto; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between;
+    margin: 26px 0 10px; }
+  .section-head h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--faint); margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--faint); font-weight: 600; padding: 0 12px 8px; }
+  tbody td { padding: 12px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:hover { background: var(--surface); }
+  .keymono { font-family: var(--mono); font-size: 13px; }
+  .keymono .pre { color: var(--muted); }
+
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;
+    padding: 2px 9px; border-radius: 999px; border: 1px solid transparent; }
+  .badge.client { background: var(--accent-weak); color: var(--accent); }
+  .badge.server { background: oklch(95% 0.03 230); color: oklch(48% 0.13 250); }
+  .badge.active { background: var(--ok-weak); color: var(--ok); }
+  .badge.revoked { background: var(--panel); color: var(--faint); }
+  .badge.grace { background: var(--warn-weak); color: oklch(50% 0.1 70); }
+
+  .usage { min-width: 120px; }
+  .usage .bar { height: 6px; border-radius: 4px; background: var(--border); overflow: hidden; margin-top: 5px; }
+  .usage .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 4px;
+    transition: width .3s var(--ease); }
+  .usage .bar > i.hot { background: var(--danger); }
+  .usage .num { font-size: 12.5px; color: var(--muted); }
+  .usage .num b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .eu { font-size: 12px; color: var(--faint); margin-top: 6px; }
+  .eu span { font-variant-numeric: tabular-nums; }
+
+  .inline-edit { display: inline-flex; gap: 6px; align-items: center; }
+  .inline-edit input { width: 72px; padding: 4px 7px; }
+  .origins-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .origins-list code { font-family: var(--mono); font-size: 11.5px; background: var(--panel);
+    border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; }
+
+  /* progressive-disclosure panels (no modals) */
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: var(--shadow); padding: 16px; margin: 12px 0; }
+  .panel .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .panel .full { grid-column: 1 / -1; }
+  .panel .acts { display: flex; gap: 8px; margin-top: 14px; }
+
+  .reveal { background: oklch(28% 0.04 285); color: oklch(96% 0.01 285);
+    border-radius: 12px; padding: 14px 16px; margin: 12px 0; display: flex; align-items: center; gap: 12px; }
+  .reveal .k { font-family: var(--mono); font-size: 13px; word-break: break-all; flex: 1;
+    color: oklch(90% 0.06 150); }
+  .reveal .lbl2 { font-size: 12px; color: oklch(78% 0.02 285); }
+
+  #toasts { position: fixed; bottom: 18px; right: 18px; display: flex; flex-direction: column;
+    gap: 8px; z-index: 60; }
+  .toast { background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+    border-radius: 10px; padding: 10px 14px; font-size: 13px; min-width: 200px;
+    animation: slide .22s var(--ease); }
+  .toast.err { border-color: oklch(82% 0.08 25); color: var(--danger); }
+  .toast.ok { border-color: oklch(82% 0.07 155); }
+  @keyframes slide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .skel { background: linear-gradient(90deg, var(--panel), var(--surface), var(--panel));
+    background-size: 200% 100%; animation: sh 1.2s infinite; border-radius: 6px; height: 14px; }
+  @keyframes sh { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } aside { display: none; } }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="card">
+    <h1>Demoviewer <b style="color:var(--accent)">Admin</b></h1>
+    <p>Enter the owner admin token to manage users and keys.</p>
+    <input id="gateTok" class="field" type="password" placeholder="Admin token" autocomplete="off">
+    <div style="margin-top:12px"><button class="btn primary" style="width:100%" id="gateBtn">Unlock</button></div>
+    <div id="gateErr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <span class="brand">Demoviewer <b>Admin</b></span>
+    <span class="spacer"></span>
+    <span class="pill" id="resetPill" title="Rate-limit window reset"></span>
+    <button class="btn ghost sm" id="lockBtn">Lock</button>
+  </header>
+  <div class="layout">
+    <aside>
+      <div class="aside-head">
+        <h2>Users</h2>
+        <button class="btn primary sm" id="newUserBtn">+ New</button>
+      </div>
+      <div class="search"><input id="userSearch" class="field" placeholder="Search users…"></div>
+      <div id="userList"></div>
+    </aside>
+    <main id="main"></main>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+"use strict";
+const TOKEN_KEY = "dv_admin_token";
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const state = { token: sessionStorage.getItem(TOKEN_KEY) || "", users: [], filter: "",
+                selected: null, keys: [], usage: {}, reset: 0 };
+
+// ---- api ----
+async function api(method, path, body) {
+  const res = await fetch(path, {
+    method,
+    headers: { "Content-Type": "application/json", "X-Admin-Token": state.token },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 401) { lock(); throw new Error("Unauthorized"); }
+  const data = res.headers.get("content-type")?.includes("json") ? await res.json() : null;
+  if (!res.ok) throw new Error(data?.detail || `${res.status} ${res.statusText}`);
+  return data;
+}
+
+function toast(msg, kind="ok") {
+  const t = document.createElement("div");
+  t.className = `toast ${kind}`; t.textContent = msg;
+  $("#toasts").append(t);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity .3s"; }, 2600);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ---- auth gate ----
+function lock() {
+  state.token = ""; sessionStorage.removeItem(TOKEN_KEY);
+  $("#app").style.display = "none"; $("#gate").style.display = "grid"; $("#gateTok").focus();
+}
+async function unlock(tok) {
+  state.token = tok;
+  try {
+    await api("GET", "/admin/users");          // validates the token
+    sessionStorage.setItem(TOKEN_KEY, tok);
+    $("#gate").style.display = "none"; $("#app").style.display = "grid";
+    $("#gateErr").textContent = "";
+    await loadUsers(); tickReset();
+  } catch (e) {
+    state.token = "";
+    $("#gateErr").textContent = e.message === "Unauthorized" ? "Invalid token." : e.message;
+  }
+}
+
+// ---- data ----
+async function loadUsers() {
+  const { users } = await api("GET", "/admin/users");
+  state.users = users;
+  renderUsers();
+  if (state.selected && !users.find(u => u.id === state.selected)) state.selected = null;
+  if (state.selected) renderDetail(); else renderEmpty();
+}
+async function loadUsage() {
+  const u = await api("GET", "/admin/usage");
+  state.reset = u.reset;
+  state.usage = Object.fromEntries(u.keys.map(k => [k.key_id, k]));
+}
+async function selectUser(id) {
+  state.selected = id;
+  renderUsers();
+  $("#main").innerHTML = `<div class="pad"><div class="skel" style="width:200px;height:22px"></div></div>`;
+  const [{ keys }] = await Promise.all([api("GET", `/admin/users/${id}/keys`), loadUsage()]);
+  state.keys = keys;
+  renderDetail();
+}
+
+// ---- render: sidebar ----
+function renderUsers() {
+  const q = state.filter.toLowerCase();
+  const list = state.users.filter(u =>
+    !q || u.email.toLowerCase().includes(q) || (u.display_name||"").toLowerCase().includes(q));
+  $(".aside-head h2").textContent = `Users · ${state.users.length}`;
+  $("#userList").innerHTML = list.map(u => `
+    <button class="urow" aria-selected="${u.id === state.selected}" onclick="selectUser(${u.id})">
+      <span class="dot ${u.status}"></span>
+      <span style="min-width:0">
+        <div class="em">${esc(u.display_name || u.email)}</div>
+        <div class="sub">${esc(u.display_name ? u.email : "#" + u.id)}</div>
+      </span>
+    </button>`).join("") || `<div style="padding:14px;color:var(--faint);font-size:13px">No users match.</div>`;
+}
+
+// ---- render: detail ----
+function renderEmpty() {
+  $("#main").innerHTML = `
+    <div class="empty"><div>
+      <div class="ic">⌘</div>
+      <div style="font-weight:600;color:var(--text)">Select a user</div>
+      <div style="font-size:13px;margin-top:4px">Pick someone on the left, or create a user to issue their first key.</div>
+    </div></div>`;
+}
+
+function statusBadge(k) {
+  if (k.status === "revoked") return `<span class="badge revoked">revoked</span>`;
+  if (k.expires_at) return `<span class="badge grace">rotating</span>`;
+  return `<span class="badge active">active</span>`;
+}
+function usageCell(k) {
+  const u = state.usage[k.id]; const used = u?.used ?? 0; const limit = k.rate_per_hour;
+  const pct = limit ? Math.min(100, Math.round(used / limit * 100)) : 0;
+  const eu = (u?.end_users || []).filter(e => e.used > 0).slice(0, 4);
+  return `<div class="usage">
+      <div class="num"><b>${used}</b> / ${limit ?? "∞"}</div>
+      ${limit ? `<div class="bar"><i class="${pct>=100?"hot":""}" style="width:${pct}%"></i></div>` : ""}
+      ${eu.length ? `<div class="eu">${eu.map(e=>`${esc(e.end_user)} <span>${e.used}</span>`).join(" · ")}</div>` : ""}
+    </div>`;
+}
+function originsCell(k) {
+  if (k.kind === "server") return `<span style="color:var(--faint)">— backend —</span>`;
+  const o = k.allowed_origins || [];
+  return `<span class="origins-list">${o.length ? o.map(x=>`<code>${esc(x)}</code>`).join("") :
+    `<span style="color:var(--faint)">none</span>`}
+    <button class="btn ghost sm" onclick="editOrigins(${k.id})">edit</button></span>`;
+}
+function rateCell(k) {
+  return `<span class="inline-edit">
+      <button class="btn ghost sm" onclick="editRate(${k.id}, ${k.rate_per_hour ?? "null"})">
+        ${k.rate_per_hour ?? "∞"} /hr</button></span>`;
+}
+
+function renderDetail() {
+  const u = state.users.find(x => x.id === state.selected); if (!u) return renderEmpty();
+  const rows = state.keys.map(k => `
+    <tr>
+      <td class="keymono"><span class="pre">${esc(k.prefix)}_</span>…${esc(k.last4)}</td>
+      <td><span class="badge ${k.kind}">${k.kind}</span></td>
+      <td>${originsCell(k)}</td>
+      <td>${rateCell(k)}</td>
+      <td>${usageCell(k)}</td>
+      <td>${statusBadge(k)}</td>
+      <td style="text-align:right;white-space:nowrap">
+        ${k.status === "active" ? `
+          <button class="btn sm" onclick="rotateKey(${k.id})">Rotate</button>
+          <button class="btn sm danger" onclick="revokeKey(${k.id})">Revoke</button>` : "—"}
+      </td>
+    </tr>`).join("");
+
+  $("#main").innerHTML = `<div class="pad">
+    <div class="detail-head">
+      <div>
+        <h1>${esc(u.display_name || u.email)}</h1>
+        <div class="meta">${esc(u.email)} · user #${u.id} ·
+          <span class="badge ${u.status}">${u.status}</span></div>
+      </div>
+      <div class="row-actions">
+        <button class="btn sm" onclick="renameUser(${u.id})">Rename</button>
+        <button class="btn sm" onclick="toggleSuspend(${u.id}, '${u.status}')">
+          ${u.status === "active" ? "Suspend" : "Reactivate"}</button>
+      </div>
+    </div>
+    <div id="revealSlot"></div>
+    <div class="section-head">
+      <h3>API keys · ${state.keys.length}</h3>
+      <button class="btn primary sm" onclick="showIssue(${u.id})">+ Issue key</button>
+    </div>
+    <div id="issueSlot"></div>
+    ${state.keys.length ? `<table>
+      <thead><tr><th>Key</th><th>Type</th><th>Origins</th><th>Limit</th><th>Usage (this hour)</th><th>Status</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>` :
+      `<div class="panel" style="text-align:center;color:var(--muted)">
+        No keys yet. Issue a <b>client</b> key for an embeddable, origin-locked viewer, or a
+        <b>server</b> key for a backend proxy.</div>`}
+  </div>`;
+}
+
+// ---- actions ----
+function showIssue(uid) {
+  $("#issueSlot").innerHTML = `<div class="panel">
+    <div class="grid">
+      <div><label class="lbl">Key type</label>
+        <select id="ikKind" class="field" onchange="toggleOriginField()">
+          <option value="client">client — browser, origin-locked</option>
+          <option value="server">server — backend proxy</option></select></div>
+      <div><label class="lbl">Rate limit (per hour)</label>
+        <input id="ikRate" class="field" type="number" min="1" placeholder="client default 100"></div>
+      <div class="full" id="ikOriginsWrap"><label class="lbl">Allowed origins (comma-separated, wildcards ok)</label>
+        <input id="ikOrigins" class="field" placeholder="https://*.example.com, https://app.site.com"></div>
+    </div>
+    <div class="acts">
+      <button class="btn primary sm" onclick="issueKey(${uid})">Issue key</button>
+      <button class="btn ghost sm" onclick="$('#issueSlot').innerHTML=''">Cancel</button>
+    </div></div>`;
+}
+function toggleOriginField() {
+  $("#ikOriginsWrap").style.display = $("#ikKind").value === "client" ? "" : "none";
+}
+async function issueKey(uid) {
+  const kind = $("#ikKind").value;
+  const rate = $("#ikRate").value ? Number($("#ikRate").value) : null;
+  const origins = $("#ikOrigins")?.value.split(",").map(s=>s.trim()).filter(Boolean) || [];
+  try {
+    const r = await api("POST", `/admin/users/${uid}/keys`,
+      { kind, allowed_origins: kind === "client" ? origins : [], rate_per_hour: rate });
+    await selectUser(uid);
+    showReveal(r.key, "Copy it now — it is shown only once.");
+    toast("Key issued");
+  } catch (e) { toast(e.message, "err"); }
+}
+function showReveal(key, note) {
+  $("#revealSlot").innerHTML = `<div class="reveal">
+    <div style="flex:1"><div class="lbl2">${esc(note)}</div><div class="k">${esc(key)}</div></div>
+    <button class="btn sm" onclick="copyKey(this, '${esc(key)}')">Copy</button>
+    <button class="btn ghost sm" style="color:inherit" onclick="$('#revealSlot').innerHTML=''">Dismiss</button>
+  </div>`;
+}
+function copyKey(btn, key) { navigator.clipboard.writeText(key).then(()=>{ btn.textContent="Copied"; }); }
+
+async function rotateKey(id) {
+  if (!confirm("Rotate this key? The old key stays valid for the grace window, then expires.")) return;
+  try { const r = await api("PATCH", `/admin/keys/${id}`, { action: "rotate" });
+    await selectUser(state.selected); showReveal(r.key, "New key — copy it now, shown once.");
+    toast("Key rotated"); } catch (e) { toast(e.message, "err"); }
+}
+async function revokeKey(id) {
+  if (!confirm("Revoke this key immediately? This cannot be undone.")) return;
+  try { await api("PATCH", `/admin/keys/${id}`, { action: "revoke" });
+    await selectUser(state.selected); toast("Key revoked"); } catch (e) { toast(e.message, "err"); }
+}
+async function editRate(id, current) {
+  const v = prompt("New hourly rate limit (number):", current ?? "");
+  if (v === null) return;
+  const n = Number(v); if (!Number.isFinite(n) || n < 1) return toast("Enter a positive number", "err");
+  try { await api("PATCH", `/admin/keys/${id}`, { rate_per_hour: n });
+    await selectUser(state.selected); toast("Rate updated"); } catch (e) { toast(e.message, "err"); }
+}
+async function editOrigins(id) {
+  const k = state.keys.find(x => x.id === id);
+  const v = prompt("Allowed origins (comma-separated):", (k.allowed_origins||[]).join(", "));
+  if (v === null) return;
+  const origins = v.split(",").map(s=>s.trim()).filter(Boolean);
+  try { await api("PATCH", `/admin/keys/${id}`, { allowed_origins: origins });
+    await selectUser(state.selected); toast("Origins updated"); } catch (e) { toast(e.message, "err"); }
+}
+async function renameUser(id) {
+  const u = state.users.find(x => x.id === id);
+  const v = prompt("Display name:", u.display_name || "");
+  if (v === null) return;
+  try { await api("PATCH", `/admin/users/${id}`, { display_name: v });
+    await loadUsers(); toast("User renamed"); } catch (e) { toast(e.message, "err"); }
+}
+async function toggleSuspend(id, status) {
+  const next = status === "active" ? "suspended" : "active";
+  if (next === "suspended" && !confirm("Suspend this user? All their keys stop working immediately.")) return;
+  try { await api("PATCH", `/admin/users/${id}`, { status: next });
+    await loadUsers(); if (state.selected === id) await selectUser(id);
+    toast(next === "suspended" ? "User suspended" : "User reactivated"); }
+  catch (e) { toast(e.message, "err"); }
+}
+async function newUser() {
+  const email = prompt("New user email:"); if (!email) return;
+  const name = prompt("Display name (optional):") || null;
+  try { const r = await api("POST", "/admin/users", { email, display_name: name });
+    await loadUsers(); await selectUser(r.id); toast("User created"); }
+  catch (e) { toast(e.message, "err"); }
+}
+
+// ---- reset pill ----
+function tickReset() {
+  const pill = $("#resetPill");
+  const upd = () => {
+    if (!state.reset) { pill.style.display = "none"; return; }
+    pill.style.display = "";
+    const s = state.reset - Math.floor(Date.now()/1000);
+    const m = Math.floor(s/60);
+    pill.textContent = s > 0 ? `window resets in ${m >= 1 ? m + "m" : s + "s"}` : "window resetting…";
+  };
+  upd(); setInterval(upd, 1000);
+}
+
+// ---- wire up ----
+$("#gateBtn").onclick = () => unlock($("#gateTok").value.trim());
+$("#gateTok").addEventListener("keydown", e => { if (e.key === "Enter") unlock($("#gateTok").value.trim()); });
+$("#lockBtn").onclick = lock;
+$("#newUserBtn").onclick = newUser;
+$("#userSearch").addEventListener("input", e => { state.filter = e.target.value; renderUsers(); });
+
+if (state.token) unlock(state.token); else lock();
+</script>
+</body>
+</html>

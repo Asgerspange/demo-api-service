@@ -1,0 +1,27 @@
+[project]
+name = "demoparser"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiomysql>=0.2.0",
+    "apscheduler>=3.11.0",
+    "awpy",
+    "cryptography>=44.0.1",
+    "pyarrow==19.0.0",
+    "pillow==11.1.0",
+    "fastapi>=0.103.2",
+    "loguru>=0.7.3",
+    "python-dotenv>=1.0.1",
+    "uvicorn>=0.34.0",
+    "zstandard>=0.25.0",
+    "orjson>=3.9.0",
+    "aiohttp>=3.13.5",
+]
+
+[tool.uv.sources]
+awpy = { git = "https://github.com/asgerspange/awpy.git", rev = "main" }
+
+[tool.setuptools]
+py-modules = ["main", "helpers", "config", "bunny_manager", "database", "demo_processor", "demo_service"]

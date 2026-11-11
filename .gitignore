@@ -1,0 +1,36 @@
+# secrets / env (the *.example files stay tracked)
+.env
+.env.local
+.env.prod
+.env.production
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.uv/
+*.egg-info/
+
+# node / viewer build
+node_modules/
+viewer/dist/
+
+# local manual-ingest output (canonical.zip + raw + per-round bins)
+_ingest_out/
+
+# demos & parsed artifacts — never commit
+*.dem
+*.dem.gz
+*.dem.bz2
+*.parquet
+canonical.zip
+
+# os
+.DS_Store
+
+# large vendored reference (kept locally, not tracked in this repo's history)
+demoparser2/
+awpy.readthedocs.io/
+
+# local tool settings
+.claude/settings.local.json

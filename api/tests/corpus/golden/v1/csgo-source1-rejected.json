@@ -1,0 +1,6 @@
+{
+  "error": "CSGO (Source 1) demo rejected: this service is CS2-only",
+  "outcome": "rejected",
+  "snapshot_schema": 1,
+  "stage": "extract"
+}

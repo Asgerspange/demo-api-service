@@ -1,0 +1,66 @@
+# Production stack — Stage 09 §9.1 topology.
+#
+# `api` (uvicorn, stateless, read-heavy) is deployed separately as a Coolify app, built straight
+# from the repo's root Dockerfile — Coolify's built-in Traefik terminates TLS and routes
+# api.csstrats.dk to it. This compose file covers the rest:
+#   • migrate — one-shot, applies pending migrations before `worker` starts
+#   • worker  — arq, CPU-heavy parsing → scale on queue depth
+#
+# Redis, Percona, and bunny are EXTERNAL (already running on the Hetzner box / bunny.net) —
+# wired in via deploy/.env.prod.
+#
+#   cp deploy/.env.prod.example deploy/.env.prod   # fill in secrets
+#   docker compose -f deploy/compose.prod.yml --env-file deploy/.env.prod up -d --build
+#   docker compose -f deploy/compose.prod.yml --env-file deploy/.env.prod up -d --scale worker=6
+#
+# Full step-by-step: deploy/RELEASE.md.
+name: demoviewer
+
+# Percona + Redis live in the SEPARATE (Portainer) infra stack and are attached to the external
+# `proxy` network (this box's actual shared network — the Coolify `api` app is on it too, and
+# resolves the DB/Redis containers as `percona`/`redis`, matching this stack's env). We join the
+# same network so worker/migrate resolve them by container name — their published ports are
+# host-loopback-only, so a container can't reach them any other way. `default` is this stack's
+# own net (worker ↔ migrate).
+networks:
+  default:
+  proxy:
+    external: true
+    name: proxy
+
+x-app: &app
+  build:
+    context: ../api
+    dockerfile: Dockerfile
+  image: demoviewer:latest
+  env_file: [.env.prod]
+  restart: unless-stopped
+  networks:
+    - default   # talk to each other
+    - proxy     # reach percona + redis
+
+services:
+  # Run pending migrations once, then exit. worker waits for it to succeed.
+  migrate:
+    <<: *app
+    command: ["python", "scripts/migrate.py"]
+    restart: "no"
+
+  worker:
+    <<: *app
+    command: ["arq", "app.worker.WorkerSettings"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # arq exposes no HTTP port; liveness is the process + its Redis connection.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import redis,os; redis.from_url(os.environ['REDIS_URL']).ping()"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # CPU-bound; give it headroom and bound parses per replica via INGEST_* + worker max_jobs.
+    deploy:
+      resources:
+        limits:
+          cpus: "4"

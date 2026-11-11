@@ -1,0 +1,6 @@
+{
+  "error": "POV (client-recorded) demos are not supported; record a GOTV demo instead",
+  "outcome": "rejected",
+  "snapshot_schema": 1,
+  "stage": "classify"
+}

@@ -1,0 +1,147 @@
+{
+  "comment": [
+    "Stage 15 test corpus — version-controlled POINTERS + ground truth (the .dem files are large",
+    "and live in cold object storage under `storage_ref`). Entries with `recorded: true` carry a",
+    "committed sanitized fixture in recorded/<slug>.json from which golden/v<pv>/<slug>.json is",
+    "derived; the fast CI gate diffs those. Entries with `recorded: false` are pointers whose",
+    "golden gate runs in the `slow` path against the real demo (when present). Covers every Stage",
+    "11 case + the active-duty map matrix + a reworked and an unknown map (§15.1).",
+    "Regenerate recorded fixtures: scripts/gen_corpus_fixtures.py — goldens: scripts/regen_corpus_goldens.py.",
+    "Add a prod parse failure as a reproducer: scripts/add_corpus_reproducer.py."
+  ],
+  "demos": [
+    {
+      "slug": "mm-gotv-inferno-64t",
+      "description": "64-tick Matchmaking GOTV demo on de_inferno — the canonical happy path (models the real demo.dem).",
+      "map": "de_inferno",
+      "cases": ["gotv", "64tick"],
+      "storage_ref": "corpus/mm-gotv-inferno-64t.dem",
+      "recorded": true,
+      "ground_truth": {
+        "round_count": 6,
+        "final_score": {"CT": 2, "T": 4},
+        "roster": ["76561190000000001", "76561190000000002", "76561190000000003", "76561190000000004", "76561190000000005", "76561190000000006", "76561190000000007", "76561190000000008", "76561190000000009", "76561190000000010"]
+      }
+    },
+    {
+      "slug": "faceit-128t-mirage",
+      "description": "128-tick FACEIT pro demo on de_mirage — exercises the high-tickrate path.",
+      "map": "de_mirage",
+      "cases": ["128tick", "pro"],
+      "storage_ref": "corpus/faceit-128t-mirage.dem",
+      "recorded": true,
+      "ground_truth": {
+        "round_count": 8,
+        "final_score": {"CT": 5, "T": 3}
+      }
+    },
+    {
+      "slug": "overtime-nuke",
+      "description": "Pro demo on de_nuke (multi-level radar) that went to overtime — final score must exceed regulation.",
+      "map": "de_nuke",
+      "cases": ["overtime", "pro"],
+      "storage_ref": "corpus/overtime-nuke.dem",
+      "recorded": true,
+      "ground_truth": {
+        "round_count": 35,
+        "final_score": {"CT": 19, "T": 16}
+      }
+    },
+    {
+      "slug": "disconnect-ancient",
+      "description": "de_ancient demo with a mid-match disconnect/sub — a round renders with 9 players (anomaly recorded, never a crash).",
+      "map": "de_ancient",
+      "cases": ["disconnect"],
+      "storage_ref": "corpus/disconnect-ancient.dem",
+      "recorded": true,
+      "ground_truth": {
+        "round_count": 6,
+        "final_score": {"CT": 4, "T": 2}
+      }
+    },
+    {
+      "slug": "pov-rejected",
+      "description": "A POV (client-recorded) demo — must be rejected at the header probe, never parsed.",
+      "map": null,
+      "cases": ["pov"],
+      "storage_ref": "corpus/pov-rejected.dem",
+      "recorded": true,
+      "ground_truth": {"rejected": true}
+    },
+    {
+      "slug": "truncated-corrupt",
+      "description": "A truncated/corrupt demo — the parse must fail the job cleanly with a precise error, never crash the worker.",
+      "map": null,
+      "cases": ["truncated"],
+      "storage_ref": "corpus/truncated-corrupt.dem",
+      "recorded": true,
+      "ground_truth": {"rejected": true}
+    },
+    {
+      "slug": "csgo-source1-rejected",
+      "description": "A legacy CSGO (Source 1) demo — rejected pre-parse (CS2-only) at the magic-byte/header check.",
+      "map": null,
+      "cases": ["csgo"],
+      "storage_ref": "corpus/csgo-source1-rejected.dem",
+      "recorded": true,
+      "ground_truth": {"rejected": true}
+    },
+    {
+      "slug": "community-unknown-map",
+      "description": "A demo on a community/unknown map (de_rats1337) — parses, but has no calibration → unsupported-map state.",
+      "map": "de_rats1337",
+      "cases": ["unknown_map"],
+      "storage_ref": "corpus/community-unknown-map.dem",
+      "recorded": true,
+      "ground_truth": {
+        "round_count": 4,
+        "final_score": {"CT": 1, "T": 3}
+      }
+    },
+    {
+      "slug": "matrix-dust2",
+      "description": "Active-duty map matrix — de_dust2 (pointer; golden gate runs in the slow real-demo path).",
+      "map": "de_dust2",
+      "cases": ["pro"],
+      "storage_ref": "corpus/matrix-dust2.dem",
+      "recorded": false,
+      "ground_truth": {}
+    },
+    {
+      "slug": "matrix-overpass",
+      "description": "Active-duty map matrix — de_overpass (pointer).",
+      "map": "de_overpass",
+      "cases": ["pro"],
+      "storage_ref": "corpus/matrix-overpass.dem",
+      "recorded": false,
+      "ground_truth": {}
+    },
+    {
+      "slug": "matrix-anubis",
+      "description": "Active-duty map matrix — de_anubis (pointer).",
+      "map": "de_anubis",
+      "cases": ["pro"],
+      "storage_ref": "corpus/matrix-anubis.dem",
+      "recorded": false,
+      "ground_truth": {}
+    },
+    {
+      "slug": "matrix-cache",
+      "description": "Active-duty map matrix — de_cache (pointer).",
+      "map": "de_cache",
+      "cases": ["pro"],
+      "storage_ref": "corpus/matrix-cache.dem",
+      "recorded": false,
+      "ground_truth": {}
+    },
+    {
+      "slug": "reworked-train",
+      "description": "A reworked map — the de_train rework (new calibration version) must resolve correctly or flag calibration_suspect.",
+      "map": "de_train",
+      "cases": ["reworked_map"],
+      "storage_ref": "corpus/reworked-train.dem",
+      "recorded": false,
+      "ground_truth": {}
+    }
+  ]
+}

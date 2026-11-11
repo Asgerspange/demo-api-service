@@ -1,0 +1,5 @@
+{
+  "rejected": true,
+  "stage": "classify",
+  "error": "POV (client-recorded) demos are not supported; record a GOTV demo instead"
+}

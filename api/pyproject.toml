@@ -1,0 +1,48 @@
+[project]
+name = "demoviewer-api"
+version = "0.1.0"
+description = "CS2 2D demoviewer — serving + ingestion API"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.30",
+    "aiomysql>=0.2",
+    "cryptography>=44.0",
+    "redis>=5.0",
+    "arq>=0.26",
+    "httpx>=0.27",
+    "orjson>=3.10",
+    "pydantic-settings>=2.2",
+    "zstandard>=0.22",
+    "loguru>=0.7",
+    "prometheus-client>=0.20",
+    "pyarrow>=17",
+    "pandas>=2.2",
+    "polars>=1.0",
+    "awpy>=2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+"app.admin" = ["static/*.html"]
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "respx>=0.21", "fakeredis>=2.21"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+    "unit: pure logic, no I/O",
+    "integration: needs test MySQL/Redis",
+    "e2e: full app flow through the ASGI app",
+    "regression: Stage 15 corpus golden / ground-truth gate (runs on every PR)",
+    "slow: excluded from PR runs",
+]

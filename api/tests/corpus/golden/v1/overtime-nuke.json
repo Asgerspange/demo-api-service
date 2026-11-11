@@ -1,0 +1,424 @@
+{
+  "anomalies": [],
+  "demo_type": "gotv",
+  "final_score": {
+    "CT": 19,
+    "T": 16
+  },
+  "is_gotv": true,
+  "map": "de_nuke",
+  "outcome": "parsed",
+  "player_count": 10,
+  "players": [
+    {
+      "name": "player01",
+      "steamid": "76561190000000001"
+    },
+    {
+      "name": "player02",
+      "steamid": "76561190000000002"
+    },
+    {
+      "name": "player03",
+      "steamid": "76561190000000003"
+    },
+    {
+      "name": "player04",
+      "steamid": "76561190000000004"
+    },
+    {
+      "name": "player05",
+      "steamid": "76561190000000005"
+    },
+    {
+      "name": "player06",
+      "steamid": "76561190000000006"
+    },
+    {
+      "name": "player07",
+      "steamid": "76561190000000007"
+    },
+    {
+      "name": "player08",
+      "steamid": "76561190000000008"
+    },
+    {
+      "name": "player09",
+      "steamid": "76561190000000009"
+    },
+    {
+      "name": "player10",
+      "steamid": "76561190000000010"
+    }
+  ],
+  "round_count": 35,
+  "rounds": [
+    {
+      "CT_score": 1,
+      "T_score": 0,
+      "n_ticks": 2037,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 1,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 1,
+      "T_score": 1,
+      "n_ticks": 2074,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 2,
+      "winner": "t"
+    },
+    {
+      "CT_score": 2,
+      "T_score": 1,
+      "n_ticks": 2111,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 3,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 2,
+      "T_score": 2,
+      "n_ticks": 2148,
+      "reason": "target_bombed",
+      "reason_label": "Target bombed",
+      "round_index": 4,
+      "winner": "t"
+    },
+    {
+      "CT_score": 3,
+      "T_score": 2,
+      "n_ticks": 2185,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 5,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 3,
+      "T_score": 3,
+      "n_ticks": 2222,
+      "reason": "t_killed",
+      "reason_label": "Terrorists eliminated",
+      "round_index": 6,
+      "winner": "t"
+    },
+    {
+      "CT_score": 4,
+      "T_score": 3,
+      "n_ticks": 2259,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 7,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 4,
+      "T_score": 4,
+      "n_ticks": 2296,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 8,
+      "winner": "t"
+    },
+    {
+      "CT_score": 5,
+      "T_score": 4,
+      "n_ticks": 2333,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 9,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 5,
+      "T_score": 5,
+      "n_ticks": 2370,
+      "reason": "target_bombed",
+      "reason_label": "Target bombed",
+      "round_index": 10,
+      "winner": "t"
+    },
+    {
+      "CT_score": 6,
+      "T_score": 5,
+      "n_ticks": 2407,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 11,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 6,
+      "T_score": 6,
+      "n_ticks": 2444,
+      "reason": "t_killed",
+      "reason_label": "Terrorists eliminated",
+      "round_index": 12,
+      "winner": "t"
+    },
+    {
+      "CT_score": 7,
+      "T_score": 6,
+      "n_ticks": 2481,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 13,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 8,
+      "T_score": 6,
+      "n_ticks": 2518,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 14,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 8,
+      "T_score": 7,
+      "n_ticks": 2555,
+      "reason": "t_killed",
+      "reason_label": "Terrorists eliminated",
+      "round_index": 15,
+      "winner": "t"
+    },
+    {
+      "CT_score": 9,
+      "T_score": 7,
+      "n_ticks": 2592,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 16,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 9,
+      "T_score": 8,
+      "n_ticks": 2629,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 17,
+      "winner": "t"
+    },
+    {
+      "CT_score": 10,
+      "T_score": 8,
+      "n_ticks": 2666,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 18,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 10,
+      "T_score": 9,
+      "n_ticks": 2703,
+      "reason": "target_bombed",
+      "reason_label": "Target bombed",
+      "round_index": 19,
+      "winner": "t"
+    },
+    {
+      "CT_score": 11,
+      "T_score": 9,
+      "n_ticks": 2740,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 20,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 11,
+      "T_score": 10,
+      "n_ticks": 2777,
+      "reason": "t_killed",
+      "reason_label": "Terrorists eliminated",
+      "round_index": 21,
+      "winner": "t"
+    },
+    {
+      "CT_score": 12,
+      "T_score": 10,
+      "n_ticks": 2014,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 22,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 12,
+      "T_score": 11,
+      "n_ticks": 2051,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 23,
+      "winner": "t"
+    },
+    {
+      "CT_score": 13,
+      "T_score": 11,
+      "n_ticks": 2088,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 24,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 14,
+      "T_score": 11,
+      "n_ticks": 2125,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 25,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 14,
+      "T_score": 12,
+      "n_ticks": 2162,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 26,
+      "winner": "t"
+    },
+    {
+      "CT_score": 15,
+      "T_score": 12,
+      "n_ticks": 2199,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 27,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 15,
+      "T_score": 13,
+      "n_ticks": 2236,
+      "reason": "target_bombed",
+      "reason_label": "Target bombed",
+      "round_index": 28,
+      "winner": "t"
+    },
+    {
+      "CT_score": 16,
+      "T_score": 13,
+      "n_ticks": 2273,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 29,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 16,
+      "T_score": 14,
+      "n_ticks": 2310,
+      "reason": "t_killed",
+      "reason_label": "Terrorists eliminated",
+      "round_index": 30,
+      "winner": "t"
+    },
+    {
+      "CT_score": 17,
+      "T_score": 14,
+      "n_ticks": 2347,
+      "reason": "bomb_defused",
+      "reason_label": "Bomb defused",
+      "round_index": 31,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 17,
+      "T_score": 15,
+      "n_ticks": 2384,
+      "reason": "bomb_exploded",
+      "reason_label": "Bomb exploded",
+      "round_index": 32,
+      "winner": "t"
+    },
+    {
+      "CT_score": 18,
+      "T_score": 15,
+      "n_ticks": 2421,
+      "reason": "ct_killed",
+      "reason_label": "Counter-Terrorists eliminated",
+      "round_index": 33,
+      "winner": "ct"
+    },
+    {
+      "CT_score": 18,
+      "T_score": 16,
+      "n_ticks": 2458,
+      "reason": "target_bombed",
+      "reason_label": "Target bombed",
+      "round_index": 34,
+      "winner": "t"
+    },
+    {
+      "CT_score": 19,
+      "T_score": 16,
+      "n_ticks": 2495,
+      "reason": "time_ran_out",
+      "reason_label": "Time ran out",
+      "round_index": 35,
+      "winner": "ct"
+    }
+  ],
+  "sampled_positions": [
+    [
+      -535,
+      1678
+    ],
+    [
+      -337,
+      124
+    ],
+    [
+      -155,
+      1498
+    ],
+    [
+      811,
+      -1656
+    ],
+    [
+      1761,
+      134
+    ],
+    [
+      1927,
+      1780
+    ],
+    [
+      -963,
+      -302
+    ],
+    [
+      1027,
+      -672
+    ],
+    [
+      -199,
+      -898
+    ],
+    [
+      -129,
+      908
+    ],
+    [
+      -523,
+      -182
+    ],
+    [
+      923,
+      -104
+    ]
+  ],
+  "snapshot_schema": 1,
+  "tickrate": 64
+}

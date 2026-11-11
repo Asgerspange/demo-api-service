@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CSDemoViewer — manual test</title>
+<style>
+  body { margin: 0; font: 14px system-ui, sans-serif; background: #16181d; color: #eee; }
+  header { padding: 10px 14px; background: #1f2228; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  header input { background: #0e0f12; color: #fff; border: 1px solid #333; border-radius: 4px; padding: 5px 7px; }
+  header input#apiBase { width: 230px; } header input#demoId { width: 80px; } header input#clientKey { width: 280px; }
+  header button { background: #f5a623; color: #000; border: 0; border-radius: 4px; padding: 6px 14px; cursor: pointer; font-weight: 600; }
+  #stage { width: 100vw; height: calc(100vh - 56px); }
+  #hint { padding: 6px 14px; color: #9aa; font-size: 12px; }
+  code { color: #f5a623; }
+</style>
+</head>
+<body>
+  <header>
+    <label>API base <input id="apiBase" value="http://localhost:8000" /></label>
+    <label>Demo id <input id="demoId" type="number" value="1" /></label>
+    <label>Client key <input id="clientKey" placeholder="pk_live_… (omit for proxy mode)" value="pk_live_YOUR_CLIENT_KEY" /></label>
+    <label><input id="skipFreeze" type="checkbox" checked /> Skip freezetime</label>
+    <label><input id="autoplay" type="checkbox" checked /> Autoplay</label>
+    <label><input id="autoAdvance" type="checkbox" checked /> Auto-advance</label>
+    <label><input id="scoreboard" type="checkbox" checked /> Scoreboard</label>
+    <button id="load">Load</button>
+    <button id="destroy" title="tears down the viewer (check no leftover workers in DevTools)">Destroy</button>
+  </header>
+  <div id="hint">
+    Wheel = zoom, drag = pan, double-click = reset. Needs a <code>ready</code> demo and a client key
+    whose allowed-origin matches this page's origin. Serve this file (e.g. <code>python -m http.server</code>
+    from <code>viewer/</code>) rather than opening via <code>file://</code> so the origin check + worker work.
+  </div>
+  <div id="stage"></div>
+
+  <!-- The whole viewer: one script, zero dependencies. -->
+  <script src="./dist/viewer.js"></script>
+  <script>
+    let instance = null;
+    const $ = (id) => document.getElementById(id);
+
+    function load() {
+      if (instance) { instance.destroy(); instance = null; }
+      const opts = {
+        el: '#stage',
+        apiBase: $('apiBase').value.trim(),
+        demoId: Number($('demoId').value),
+        clientKey: $('clientKey').value.trim() || undefined,
+        autoplay: $('autoplay').checked,
+        skipFreezetime: $('skipFreeze').checked,
+        autoAdvance: $('autoAdvance').checked,
+        scoreboard: $('scoreboard').checked,
+        theme: { showNames: true },
+        hooks: {
+          onReady: (api) => console.log('[viewer] ready; rounds:', api.meta?.rounds?.length),
+          onRoundChange: (i) => console.log('[viewer] round', i),
+          onError: (e) => console.warn('[viewer] error', e),
+        },
+      };
+      console.log('[viewer] init', opts);
+      instance = CSDemoViewer.init(opts);
+    }
+
+    $('load').addEventListener('click', load);
+    $('destroy').addEventListener('click', () => { instance?.destroy(); instance = null; console.log('[viewer] destroyed'); });
+
+    // Allow ?apiBase=&demoId=&clientKey= prefill + auto-load for quick sharing.
+    const q = new URLSearchParams(location.search);
+    if (q.get('apiBase')) $('apiBase').value = q.get('apiBase');
+    if (q.get('demoId')) $('demoId').value = q.get('demoId');
+    if (q.get('clientKey')) $('clientKey').value = q.get('clientKey');
+    // Auto-load on open (prefilled key + demo) — as a real embed would, no manual step.
+    load();
+  </script>
+</body>
+</html>

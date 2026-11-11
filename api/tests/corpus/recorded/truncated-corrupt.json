@@ -1,0 +1,5 @@
+{
+  "rejected": true,
+  "stage": "parse",
+  "error": "DemoParseError: unexpected EOF in demo stream (truncated/corrupt)"
+}

@@ -1,0 +1,35 @@
+.git
+.github
+.claude
+
+# unrelated services/apps not needed for the api image
+demoparser
+viewer
+Demo
+stages
+deploy
+
+# python
+.venv
+.venv-smoke
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# node
+node_modules
+
+# secrets / local artifacts
+.env
+.env.*
+!.env.example
+!.env.*.example
+_ingest_out
+*.dem
+*.dem.gz
+*.dem.bz2
+*.parquet
+canonical.zip

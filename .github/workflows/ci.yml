@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  # API: unit + integration + e2e (not slow) against a throwaway Percona. Redis is faked
+  # in-process (fakeredis), so no Redis service is needed.
+  api:
+    runs-on: ubuntu-latest
+    services:
+      percona:
+        image: percona:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: devroot
+          MYSQL_DATABASE: demoviewer
+          MYSQL_USER: demoviewer
+          MYSQL_PASSWORD: devpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pdevroot"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    env:
+      # Point the app + test harness at the CI Percona (conftest connects as root/devroot).
+      DB_HOST: 127.0.0.1
+      DB_PORT: "3306"
+      TEST_DB_ROOT_USER: root
+      TEST_DB_ROOT_PASSWORD: devroot
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --frozen
+      - name: corpus goldens up to date (Stage 15 gate)
+        run: uv run python scripts/regen_corpus_goldens.py --check
+      - name: pytest (not slow)
+        run: uv run pytest -m "not slow" -q
+
+  # Viewer: vitest (worker decode + scale math) and a clean bundle build.
+  viewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: viewer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: viewer-bundle
+          path: viewer/dist/
+
+  # Confirm the one image (api + worker entrypoints) builds.
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: api
+          push: false
+          tags: demoviewer:ci
